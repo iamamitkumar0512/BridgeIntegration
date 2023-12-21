@@ -1,48 +1,47 @@
 import React from "react";
-import { useState } from "react";
-import avatar from "../assests/profile.png";
 import styles from "../styles/Username.module.css";
-import { toast, Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import { useFormik } from "formik";
 import { setCloseBtn } from "../Utils/modalStateSlice";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import generateUuid from "../Utils/generateUuid";
-import { setCustomerData, setCustomerState } from "../Utils/customerSlice";
+import { setBankData } from "../Utils/bankAccountSlice";
 
-const CustomerRegisterModal = () => {
-  const customerModalState = useSelector(
-    (store) => store.modalState.customerModalState
+const AddBankAccount = () => {
+  const bankModalState = useSelector(
+    (store) => store.modalState.bankModalState
   );
-  const signedAgreementId = useSelector(
-    (store) => store.signedAgreement.signedAgreementId
-  );
+  const customerData = useSelector((store) => store.customer.customerData);
+  const customerId = customerData.id;
+
   const uuid = generateUuid();
   const dispatch = useDispatch();
   const formik = useFormik({
     initialValues: {
-      firstName: "",
-      lastName: "",
-      mobile: "",
-      email: "",
+      bank_name: "",
+      account_number: "",
+      routing_number: "",
+      account_name: "",
+      account_owner_name: "",
       street_line_1: "",
       street_line_2: "",
       city: "",
       state: "",
       postal_code: "",
       country: "",
-      birth_date: "",
-      tax_identification_number: "",
     },
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
       const data = {
-        type: "individual",
-        first_name: values.firstName,
-        last_name: values.lastName,
-        email: values.email,
-        phone: values.mobile,
+        type: "raw",
+        bank_name: values.bank_name,
+        account_number: values.account_number,
+        routing_number: values.routing_number,
+        account_name: values.account_name,
+        account_owner_name: values.account_owner_name,
+        active: "true",
         address: {
           street_line_1: values.street_line_1,
           street_line_2: values.street_line_2,
@@ -51,14 +50,11 @@ const CustomerRegisterModal = () => {
           postal_code: values.postal_code,
           country: values.country,
         },
-        signed_agreement_id: signedAgreementId,
-        birth_date: values.birth_date,
-        tax_identification_number: values.tax_identification_number,
       };
       console.log(data);
       try {
         const response = await axios.post(
-          "/v0/customers",
+          `/v0/customers/${customerId}/external_accounts`,
           {
             ...data,
           },
@@ -71,9 +67,8 @@ const CustomerRegisterModal = () => {
           }
         );
         console.log(response.data);
-        localStorage.setItem("customerData", JSON.stringify(response.data));
-        dispatch(setCustomerData(response.data));
-        dispatch(setCustomerState(response.data.state));
+        localStorage.setItem("bankDetails", JSON.stringify(response.data));
+        dispatch(setBankData(response.data));
         dispatch(setCloseBtn());
       } catch (error) {
         console.error(
@@ -84,7 +79,7 @@ const CustomerRegisterModal = () => {
     },
   });
 
-  return customerModalState ? (
+  return bankModalState ? (
     <>
       <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
         <div className="container mx-auto">
@@ -94,8 +89,10 @@ const CustomerRegisterModal = () => {
               className={styles.glass}
               style={{ width: "45%", paddingTop: "1em" }}
             >
-              <div className="title flex flex-row justify-between items-center">
-                <h4 className="text-2xl font-bold item-center">Register</h4>
+              <div className="title p-6 flex flex-row justify-between items-center">
+                <h4 className="text-2xl font-bold item-center">
+                  Add Bank Account
+                </h4>
                 <button
                   className="bg-red-500 text-white active:bg-red-600 font-bold uppercase text-sm px-2 py-1 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                   type="button"
@@ -106,38 +103,36 @@ const CustomerRegisterModal = () => {
               </div>
 
               <form className="py-1" onSubmit={formik.handleSubmit}>
-                <div className="profile flex justify-center py-1">
-                  <img
-                    src={avatar}
-                    className={styles.profile_img}
-                    alt="avatar"
-                  />
-                </div>
-
                 <div className="textbox flex flex-col items-center gap-2">
                   <input
-                    {...formik.getFieldProps("firstName")}
+                    {...formik.getFieldProps("bank_name")}
                     className={styles.textbox}
                     type="text"
-                    placeholder="First Name*"
+                    placeholder="bank_name"
                   />
                   <input
-                    {...formik.getFieldProps("lastName")}
+                    {...formik.getFieldProps("account_number")}
                     className={styles.textbox}
                     type="text"
-                    placeholder="Last Name*"
+                    placeholder="account_number"
                   />
                   <input
-                    {...formik.getFieldProps("mobile")}
+                    {...formik.getFieldProps("routing_number")}
                     className={styles.textbox}
                     type="text"
-                    placeholder="Phone Number*"
+                    placeholder="routing_number"
                   />
                   <input
-                    {...formik.getFieldProps("email")}
+                    {...formik.getFieldProps("account_name")}
                     className={styles.textbox}
                     type="text"
-                    placeholder="Email*"
+                    placeholder="account_name"
+                  />
+                  <input
+                    {...formik.getFieldProps("account_owner_name")}
+                    className={styles.textbox}
+                    type="text"
+                    placeholder="account_owner_name"
                   />
 
                   <input
@@ -176,21 +171,8 @@ const CustomerRegisterModal = () => {
                     type="text"
                     placeholder="country"
                   />
-
-                  <input
-                    {...formik.getFieldProps("birth_date")}
-                    className={styles.textbox}
-                    type="text"
-                    placeholder="birth_date"
-                  />
-                  <input
-                    {...formik.getFieldProps("tax_identification_number")}
-                    className={styles.textbox}
-                    type="text"
-                    placeholder="tax_identification_number"
-                  />
                   <button className={styles.btn} type="submit">
-                    Register
+                    Add
                   </button>
                 </div>
               </form>
@@ -202,4 +184,4 @@ const CustomerRegisterModal = () => {
   ) : null;
 };
 
-export default CustomerRegisterModal;
+export default AddBankAccount;

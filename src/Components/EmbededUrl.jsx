@@ -1,21 +1,28 @@
 import React, { useRef } from "react";
-import { toast, Toaster } from "react-hot-toast";
-import { useState } from "react";
+import { Toaster } from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { setSignedAgreementId } from "../Utils/signedAgreementSlice";
+import { setCloseBtn, setCustomerModalState } from "../Utils/modalStateSlice";
+import { useSelector } from "react-redux";
+import store from "../Utils/store";
 
 const EmbeddedUrl = ({ tosUrl }) => {
+  const tosModalState = useSelector((store) => store.modalState.tosModalState);
   const iframeRef = useRef(null);
   console.log(tosUrl, "----");
-  const [showModal, setShowModal] = useState(true);
+  const dispatch = useDispatch();
 
   const handleMessage = (event) => {
     if (event.origin === "https://dashboard.bridge.xyz") {
       console.log("Received message:", event.data);
       localStorage.setItem("signedAgreementId", event.data.signedAgreementId);
-      setShowModal(false);
+      dispatch(setSignedAgreementId(event.data.signedAgreementId));
+      dispatch(setCloseBtn());
+      dispatch(setCustomerModalState());
     }
   };
 
-  return showModal ? (
+  return tosModalState ? (
     <>
       <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
         <div className="container  mx-auto">
@@ -30,7 +37,7 @@ const EmbeddedUrl = ({ tosUrl }) => {
                 <button
                   className="bg-red-500 text-white active:bg-red-600 font-bold uppercase text-sm px-2 py-1 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                   type="button"
-                  onClick={() => setShowModal(false)}
+                  onClick={() => dispatch(setCloseBtn())}
                 >
                   Close
                 </button>

@@ -2,8 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const customerSlice = createSlice({
   name: "customer",
-  intialState: {
-    customerState: "pending",
+  initialState: {
+    customerState: "",
     customerData: {},
   },
   reducers: {
@@ -16,5 +16,5 @@ const customerSlice = createSlice({
   },
 });
 
-export const { setCustomerData, setCustomerState } = customerSlice.actions;
+export const { setCustomerState, setCustomerData } = customerSlice.actions;
 export default customerSlice.reducer;

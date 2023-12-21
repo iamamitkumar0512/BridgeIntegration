@@ -1,12 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
-import customerSlice from "./customerSlice";
 import signedAgreementSlice from "./signedAgreementSlice";
 import modalStateSlice from "./modalStateSlice";
+import customerSlice from "./customerSlice";
+import bankAccountSlice from "./bankAccountSlice";
 const store = configureStore({
   reducer: {
-    customer: customerSlice,
     signedAgreement: signedAgreementSlice,
     modalState: modalStateSlice,
+    customer: customerSlice,
+    bankAccount: bankAccountSlice,
   },
 });
 

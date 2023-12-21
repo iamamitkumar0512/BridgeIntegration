@@ -1,13 +1,34 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useState } from "react";
 import generateUuid from "../Utils/generateUuid";
 import axios from "axios";
 import EmbeddedUrl from "./EmbededUrl";
 import CustomerRegisterModal from "./CustomerRegisterModal";
+import { useDispatch } from "react-redux";
+import { setSignedAgreementId } from "../Utils/signedAgreementSlice";
+import {
+  setCloseBtn,
+  setCustomerModalState,
+  setTosModalState,
+} from "../Utils/modalStateSlice";
+import { useSelector } from "react-redux";
+import store from "../Utils/store";
+import { setCustomerData } from "../Utils/customerSlice";
+import { useNavigate } from "react-router-dom";
+
 const Bridge = () => {
+  const navigate = useNavigate();
   const [data, setData] = useState();
-  const [showIframe, setShowIfram] = useState(false);
+  const tosModalState = useSelector((store) => store.modalState.tosModalState);
+  const customerModalState = useSelector(
+    (store) => store.modalState.customerModalState
+  );
+  const signedAgreementId = useSelector(
+    (store) => store.signedAgreement.signedAgreementId
+  );
+  console.log(tosModalState, customerModalState, signedAgreementId);
   const uuid = generateUuid();
+  const dispatch = useDispatch();
 
   const makeApiCalltos = async () => {
     try {
@@ -24,9 +45,9 @@ const Bridge = () => {
       );
       console.log(response.data);
       setData(response.data);
-      setShowIfram(true);
+      dispatch(setTosModalState());
     } catch (error) {
-      setShowIfram(false);
+      dispatch(setCloseBtn());
       console.error(
         "Error:",
         error.response ? error.response.data.message : error.message
@@ -34,7 +55,16 @@ const Bridge = () => {
     }
   };
   const handelOnclick = async () => {
-    await makeApiCalltos();
+    if (localStorage.getItem("signedAgreementId")) {
+      dispatch(setCloseBtn());
+      dispatch(setSignedAgreementId(localStorage.getItem("signedAgreementId")));
+      if (localStorage.getItem("customerData")) {
+        dispatch(
+          setCustomerData(JSON.parse(localStorage.getItem("customerData")))
+        );
+        navigate("/customerData");
+      } else dispatch(setCustomerModalState());
+    } else await makeApiCalltos();
   };
 
   return (
@@ -45,8 +75,8 @@ const Bridge = () => {
       >
         deposit
       </button>
-      {showIframe && data && <EmbeddedUrl tosUrl={data.url} />}
-      <CustomerRegisterModal />
+      {data && tosModalState && <EmbeddedUrl tosUrl={data.url} />}
+      {customerModalState && signedAgreementId && <CustomerRegisterModal />}
     </div>
   );
 };
