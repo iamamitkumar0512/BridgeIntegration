@@ -3,6 +3,7 @@ import { useState } from "react";
 import generateUuid from "../Utils/generateUuid";
 import axios from "axios";
 import EmbeddedUrl from "./EmbededUrl";
+import CustomerRegisterModal from "./CustomerRegisterModal";
 const Bridge = () => {
   const [data, setData] = useState();
   const [showIframe, setShowIfram] = useState(false);
@@ -16,7 +17,7 @@ const Bridge = () => {
         {
           headers: {
             accepts: "application/json",
-            "Api-Key": process.env.API_KEY,
+            "Api-Key": "sk-test-c0b80685ba650b2bf2bf5b9c69bcb1db",
             "Idempotency-Key": uuid,
           },
         }
@@ -45,6 +46,7 @@ const Bridge = () => {
         deposit
       </button>
       {showIframe && data && <EmbeddedUrl tosUrl={data.url} />}
+      <CustomerRegisterModal />
     </div>
   );
 };

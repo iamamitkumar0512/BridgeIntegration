@@ -1,6 +1,5 @@
 import "./App.css";
 import Bridge from "./Components/Bridge";
-import EmbeddedUrl from "./Components/EmbededUrl";
 
 function App() {
   return (
