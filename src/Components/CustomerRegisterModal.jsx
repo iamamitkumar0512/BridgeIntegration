@@ -1,6 +1,4 @@
 import React from "react";
-import { useState } from "react";
-import avatar from "../assests/profile.png";
 import styles from "../styles/Username.module.css";
 import { toast, Toaster } from "react-hot-toast";
 import { useFormik } from "formik";
@@ -106,14 +104,6 @@ const CustomerRegisterModal = () => {
               </div>
 
               <form className="py-1" onSubmit={formik.handleSubmit}>
-                <div className="profile flex justify-center py-1">
-                  <img
-                    src={avatar}
-                    className={styles.profile_img}
-                    alt="avatar"
-                  />
-                </div>
-
                 <div className="textbox flex flex-col items-center gap-2">
                   <input
                     {...formik.getFieldProps("firstName")}

@@ -12,6 +12,9 @@ const UserData = () => {
   const customerData = useSelector((store) => store.customer.customerData);
   const customerState = useSelector((store) => store.customer.customerState);
   const customerId = customerData.id;
+  console.log(customerId);
+  const accountId = useSelector((store) => store.bankAccount.bankData?.id);
+
   console.log(customerState);
   const makeApiCall = async () => {
     try {
@@ -58,9 +61,7 @@ const UserData = () => {
         </button>
       )}
       <AddBankAccount />
-      <div className="m-6 p-6">
-        <BankAccuntDetails />
-      </div>
+      <div className="m-6 p-6">{accountId && <BankAccuntDetails />}</div>
     </div>
   );
 };
